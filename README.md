@@ -28,3 +28,9 @@ pip install -r requirements.txt
 Additionally, to perform the authorship verification task, please install the FAISS package as suggested [here](https://github.com/facebookresearch/faiss/blob/main/INSTALL.md)
 
 # Experiments
+
+Our research establishes benchmarks for authorship identification by experimenting with various baselines across text-only, vision-only, and multimodal settings. Specifically, we utilize the DeCLUTR-small model as the backbone for text-only experiments and the ViT-base-patch16-224 model for vision-only experiments. We combine the DeCLUTR-small and ViT-base-patch16-224 models for our multimodal backbone through mean pooling to effectively capture textual and visual features. The performance results of all our authorship identification baselines are presented below.
+
+<p align="center">
+  <img src="/Images/classification.png" alt="Classification" style="width:50%; max-width:500px;">
+</p>
