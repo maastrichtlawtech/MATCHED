@@ -6,5 +6,5 @@
 The MATCHED dataset is a novel, multimodal collection of escort advertisements designed for Authorship Attribution (AA) tasks. It comprises 27,619 unique text descriptions and 55,115 associated images, sourced from the Backpage platform across seven U.S. cities and categorized into four geographical regions. The dataset spans December 2015 to April 2016, offering a rich blend of textual and visual data for vendor identification and verification tasks. To protect individual identities, all personally identifiable information has been meticulously removed using advanced masking techniques. While the raw dataset remains securely stored, only metadata is available on Dataverse. Interested parties can access the complete dataset under strict ethical guidelines by signing a Non-Disclosure Agreement (NDA) and Data Transfer Agreement with us.
 
 <p align="center">
-  <img src="/Images/Dataset.png" width="400" height="300">
+  <img src="/Images/Dataset.png">
 </p>
