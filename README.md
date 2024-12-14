@@ -9,6 +9,8 @@ The MATCHED dataset is a novel, multimodal collection of escort advertisements d
   <img src="/Images/Dataset.png" alt="Dataset" style="width:50%; max-width:500px;">
 </p>
 
+After the request to access is granted, download the datasets and keep them in a folder "data/processed/" wrt to your working directory.
+
 # Setup
 This repository is tested on Python 3.10 and [conda](https://docs.conda.io/projects/miniconda/en/latest/). First, you should install a virtual environment:
 ```
@@ -38,18 +40,12 @@ Our research explores a range of baselines to establish benchmarks for text-only
 To train the text-only benchmark with DeCLUTR-small backbone, run:
 ```
 CUDA_VISIBLE_DEVICES=0 python textClassifier.py \
-    # Set the batch size for training. Larger values use more memory but may speed up training.
-    --batch_size 32 \
-    # Specify the demographic subset of the dataset to train on. Here, "south" is the selected group.
-    --demography south \
-    # Define the pretrained model to be used for classification. 
-    --model_name_or_path johngiorgi/declutr-small \
-    # Specify the tokenizer to use. It should match the model to ensure compatibility.
-    --tokenizer_name_or_path johngiorgi/declutr-small \
-    # Set the random seed for the reproducibility of the results.
-    --seed 1111 \
-    # Provide a log entry name, helping identify the experiment configuration.
-    --logged_entry_name declutr-text-only-seed:1111-bs:32-loss:CE-south \
-    # Specify the learning rate for the optimizer. Lower values may ensure more stable training.
-    --learning_rate 0.0001 \
+    --batch_size 32 \ # Set the batch size for training. Larger values use more memory but may speed up training.
+    --geography south \ # Specify the demographic subset of the dataset to train on. This could be "south", "midwest", "west", or "northeast". Here, "south" is the selected group.
+    --model_name_or_path johngiorgi/declutr-small \ # Define the pretrained model for classification. The implementation is tested for "johngiorgi/declutr-small" and "AnnaWegmann/Style-Embedding" models. 
+    --tokenizer_name_or_path johngiorgi/declutr-small \  # Specify the tokenizer to use. It should match the model to ensure compatibility.
+    --seed 1111 \  # Set the random seed for the reproducibility of the results.
+    --logged_entry_name declutr-text-only-seed:1111-bs:32-loss:CE-south \  # Provide a log entry name, helping identify the experiment configuration.
+    --learning_rate 0.0001 \  # Specify the learning rate for the optimizer. Lower values may ensure more stable training.
+    --save_dir models/text-baseline/ \ # Directory for models to be saved
 ```
