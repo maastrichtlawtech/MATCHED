@@ -38,7 +38,7 @@ Our research explores a range of baselines to establish benchmarks for text-only
 </p>
 
 To train the text-only benchmark with DeCLUTR-small backbone, run:
-```
+```python
 # Specify the GPU to use. CUDA_VISIBLE_DEVICES=0 means only GPU 0 will be used.
 CUDA_VISIBLE_DEVICES=0 python textClassifier.py \
     # Set the batch size for training. Larger values use more memory but may speed up training.
