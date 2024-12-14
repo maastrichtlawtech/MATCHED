@@ -39,13 +39,23 @@ Our research explores a range of baselines to establish benchmarks for text-only
 
 To train the text-only benchmark with DeCLUTR-small backbone, run:
 ```
+# Specify the GPU to use. CUDA_VISIBLE_DEVICES=0 means only GPU 0 will be used.
 CUDA_VISIBLE_DEVICES=0 python textClassifier.py \
-    --batch_size 32 \ # Set the batch size for training. Larger values use more memory but may speed up training.
-    --geography south \ # Specify the demographic subset of the dataset to train on. This could be "south", "midwest", "west", or "northeast". Here, "south" is the selected group.
-    --model_name_or_path johngiorgi/declutr-small \ # Define the pretrained model for classification. The implementation is tested for "johngiorgi/declutr-small" and "AnnaWegmann/Style-Embedding" models. 
-    --tokenizer_name_or_path johngiorgi/declutr-small \  # Specify the tokenizer to use. It should match the model to ensure compatibility.
-    --seed 1111 \  # Set the random seed for the reproducibility of the results.
-    --logged_entry_name declutr-text-only-seed:1111-bs:32-loss:CE-south \  # Provide a log entry name, helping identify the experiment configuration.
-    --learning_rate 0.0001 \  # Specify the learning rate for the optimizer. Lower values may ensure more stable training.
-    --save_dir models/text-baseline/ \ # Directory for models to be saved
+    # Set the batch size for training. Larger values use more memory but may speed up training.
+    --batch_size 32 \
+    # Specify the demographic subset of the dataset to train on. This could be "south", "midwest", "west", or "northeast". Here, "south" is the selected group.
+    --geography south \
+    # Define the pretrained model for classification. The implementation is tested for "johngiorgi/declutr-small" and "AnnaWegmann/Style-Embedding" models.
+    --model_name_or_path johngiorgi/declutr-small \
+    # Specify the tokenizer to use. It should match the model to ensure compatibility.
+    --tokenizer_name_or_path johngiorgi/declutr-small \
+    # Set the random seed for the reproducibility of the results.
+    --seed 1111 \
+    # Provide a log entry name, helping identify the experiment configuration.
+    --logged_entry_name declutr-text-only-seed:1111-bs:32-loss:CE-south \
+    # Specify the learning rate for the optimizer. Lower values may ensure more stable training.
+    --learning_rate 0.0001 \
+    # Directory for models to be saved.
+    --save_dir models/text-baseline/
+
 ```
