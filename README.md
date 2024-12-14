@@ -116,6 +116,7 @@ CUDA_VISIBLE_DEVICES=0 python train/text/textContraLearn.py \
 - `nb_epochs`: The number of epochs for training
 - `image_dir`: Directory of the image dataset
 - `data_dir`: Directory of the text dataset
+- `self_sup_loss`: Can be SupCon or Triplet. Only activated during the metric-learning task.
 
 To train the vision-only benchmark with ViT-base-patch16-224 backbone and CE loss, run:
 
@@ -219,7 +220,7 @@ CUDA_VISIBLE_DEVICES=0 python train/multimodal/finetuneCLIPStyleModels.py \
 To train the end-to-end DeCLUTR-ViT backbone with mean pooling-based fusion and joint loss, run:
 
 ```python
-CUDA_VISIBLE_DEVICES=0 python e2e_fusion.py \
+CUDA_VISIBLE_DEVICES=0 python train/multimodal/e2e_fusion.py \
     --batch_size 32 \
     --augment_data False \
     --city south \
@@ -239,4 +240,46 @@ CUDA_VISIBLE_DEVICES=0 python e2e_fusion.py \
 Our research also explores a range of metric-learning baselines to establish text-only and vision-only benchmarks for authorship verification tasks. These baselines are trained using Triplet or SupCon losses. 
 
 #### Text Baselines
-For the DeCLUTR-small backbone to be trained on the metric-learning task, please run the textContraLearn.py script above with the following changes:
+For the DeCLUTR-small backbone to be trained on the metric-learning task with SupCon loss and in-batch negatives, please run the textContraLearn.py script above with the following changes:
+
+```python
+CUDA_VISIBLE_DEVICES=0 python train/text/textContraLearn.py \
+    --batch_size 32 \
+    --geography south \
+    --loss1_type None \
+    --loss2_type SupCon-negatives \
+    --model_name_or_path johngiorgi/declutr-small \
+    --tokenizer_name_or_path johngiorgi/declutr-small \
+    --seed 1111 \
+    --logged_entry_name declutr-text-only-seed:1111-bs:32-loss:SupCon-south-temp:0.1 \
+    --learning_rate 0.0001 \
+    --temp 0.1 \
+    --num_hard_negatives 5 \
+    --task metric-learning \
+    --nb_triplets 5 \
+    --save_dir models/text-baseline/metric-learning/ \
+    --nb_epochs 40 \
+    --data_dir /data/processed/
+```
+
+#### Vision Baselines
+For the ViT-base-patch16-244 backbone to be trained on the metric-learning task with SupCon loss and in-batch negatives, please run the imageContraClassifier.py script above with the following changes:
+
+```python
+CUDA_VISIBLE_DEVICES=0 python train/image/imageContraClassifier.py \
+    --batch_size 32 \
+    --augment_data False \
+    --city south \
+    --data_type all \
+    --model_name_or_path vit_base_patch16_224 \
+    --seed 1111 \
+    --logged_entry_name vit-vision-only-south-noaugment-loss:SupCon-seed:1111 \
+    --learning_rate 0.0001 \
+    --temp 0.1 \
+    --nb_epochs 40 \
+    --task metric-learning \
+    --self_sup_loss SupCon \
+    --save_dir models/image-baseline/metric-learning/  \
+    --image_dir /data/IMAGES/ \
+    --data_dir /data/processed/
+```
