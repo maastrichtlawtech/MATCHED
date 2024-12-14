@@ -9,7 +9,7 @@ The MATCHED dataset is a novel, multimodal collection of escort advertisements d
   <img src="/Images/Dataset.png" alt="Dataset" style="width:50%; max-width:500px;">
 </p>
 
-After the request to access is granted, download the datasets and keep them in a folder "data/processed/" wrt to your working directory.
+After the request to access is granted, download the datasets and keep the text dataset in a folder "data/processed/" and image dataset in a folder "data/IMAGES/" wrt to your working directory.
 
 # Setup
 This repository is tested on Python 3.10 and [conda](https://docs.conda.io/projects/miniconda/en/latest/). First, you should install a virtual environment:
@@ -31,7 +31,7 @@ Additionally, to perform the authorship verification task, please install the FA
 
 # Experiments
 
-### Authorship Identification: A classification task
+### Classification task
 
 Our research explores a range of baselines to establish benchmarks for text-only, vision-only, and multimodal approaches in authorship identification. Among these, we identify the DeCLUTR-small backbone as the most effective for text-only tasks, the ViT-base-patch16-244 backbone as the best-performing vision-only model, and their combination with mean pooling as the optimal multimodal backbone. The comprehensive results for all our authorship identification baselines are presented below:
 
@@ -39,7 +39,7 @@ Our research explores a range of baselines to establish benchmarks for text-only
   <img src="/Images/identification.png" alt="Classification" style="width:65%; max-width:700px;">
 </p>
 
-#### Text Modality
+#### Text Baselines
 - Specify the GPU to use. CUDA_VISIBLE_DEVICES=0 means only GPU 0 will be used.
 - `batch_size`: Set the batch size for training. Larger values use more memory but may speed up training.
 - `geography`: Specify the geographical subset of the dataset on which to train. This could be "south," "midwest," "west," or "northeast." 
@@ -56,7 +56,8 @@ Our research explores a range of baselines to establish benchmarks for text-only
 - `task`: can be classification or metric-learning
 - `save_dir`: Directory for models to be saved
 - `nb_epochs`: The number of epochs for training
-
+- `data_dir`: Directory of the text dataset
+  
 To train the text-only benchmark with DeCLUTR-small backbone and CE loss, run:
 
 ```python
@@ -68,8 +69,9 @@ CUDA_VISIBLE_DEVICES=0 python train/text/textClassifier.py \
     --seed 1111 \
     --logged_entry_name declutr-text-only-seed:1111-bs:32-loss:CE-south \
     --learning_rate 0.0001 \
-    --save_dir models/text-baseline/ \
-    --nb_epochs 40 
+    --save_dir models/text-baseline/unimodal/ \
+    --nb_epochs 40 \
+    --data_dir /data/processed/
 ```
 
 To train the text-only benchmark with DeCLUTR-small backbone and joint loss, run:
@@ -90,10 +92,11 @@ CUDA_VISIBLE_DEVICES=0 python train/text/textContraLearn.py \
     --task classification \
     --nb_triplets 5 \
     --save_dir models/text-baseline/joint-loss/ \
-    --nb_epochs 40 
+    --nb_epochs 40 \
+    --data_dir /data/processed/
 ```
 
-#### Vision Modality
+#### Vision Baselines
 - Specify the GPU to use. CUDA_VISIBLE_DEVICES=0 means only GPU 0 will be used.
 - `batch_size`: Set the batch size for training. Larger values use more memory but may speed up training.
 - `geography`: Specify the geographical subset of the dataset on which to train. This could be "south," "midwest," "west," or "northeast." 
@@ -103,7 +106,7 @@ CUDA_VISIBLE_DEVICES=0 python train/text/textContraLearn.py \
 - `learning_rate`: Specify the learning rate for the optimizer. 
 - `save_dir`: Directory for models to be saved.
 - `temp`: Set the temperature value for contrastive loss computation.
-- `loss2_type`: Define the type of the second loss function. This could be SupCon, Triplet, infoNCE, SupCon-negatives or infoNCE-negatives.  "SupCon-negatives" refers to Supervised Contrastive loss with in-batch negative examples.
+- `loss2_type`: Can be SupCon or triplet, the first loss is set to CE. This is activated only during the classification task.
 - `num_hard_negatives`: Number of in-batch hard negatives taken from other classes in the batch
 - `task`: can be classification or metric-learning
 - `augment_data`: Perform augmentations, including HorizontalFlip, VerticalFlip, RandomResizedCrop, Rotate, ShiftScaleRotate, and GaussNoise the image data.
@@ -111,6 +114,8 @@ CUDA_VISIBLE_DEVICES=0 python train/text/textContraLearn.py \
 - `data_type`: can be faces for the dataset with human faces, nofaces for images without faces, or all
 - `save_dir`: Directory for models to be saved
 - `nb_epochs`: The number of epochs for training
+- `image_dir`: Directory of the image dataset
+- `data_dir`: Directory of the text dataset
 
 To train the vision-only benchmark with ViT-base-patch16-224 backbone and CE loss, run:
 
@@ -124,13 +129,15 @@ CUDA_VISIBLE_DEVICES=0 python train/image/imageClassifiers.py \
     --logged_entry_name vit-vision-only-south-noaugment-loss:CE-seed:1111 \
     --seed 1111 \
     --learning_rate 0.0001 \
-    --save_dir models/image-baseline/ \
-    --nb_epochs 40
+    --save_dir models/image-baseline/unimodal/ \
+    --nb_epochs 40 \
+    --image_dir /data/IMAGES/ \
+    --data_dir /data/processed/
 ```
 
 To train the vision-only benchmark with ViT-base-patch16-224 backbone and joint loss, run:
 
-```
+```python
 CUDA_VISIBLE_DEVICES=0 python train/image/imageContraClassifier.py \
     --batch_size 32 \
     --augment_data False \
@@ -144,6 +151,92 @@ CUDA_VISIBLE_DEVICES=0 python train/image/imageContraClassifier.py \
     --nb_epochs 40 \
     --task classification \
     --loss2_type SupCon \
-    --save_dir models/image-baseline/joint-loss/
+    --save_dir models/image-baseline/joint-loss/  \
+    --image_dir /data/IMAGES/ \
+    --data_dir /data/processed/
 ```
 
+#### Multimodal Baselines
+- Specify the GPU to use. CUDA_VISIBLE_DEVICES=0 means only GPU 0 will be used.
+- `batch_size`: Set the batch size for training. Larger values use more memory but may speed up training.
+- `geography`: Specify the geographical subset of the dataset on which to train. This could be "south," "midwest," "west," or "northeast." 
+- `seed`: Set the random seed for the reproducibility of the results.
+- `logged_entry_name`: Provide a log entry name to help identify the experiment configuration. Please set up a [weights and biases](https://wandb.ai/site/) account first. 
+- `learning_rate`: Specify the learning rate for the optimizer. 
+- `save_dir`: Directory for models to be saved.
+- `temp`: Set the temperature value for contrastive loss computation.
+- `loss`: Can be "CE", "CE+SupCon", "CE+SupCon+ITM", "SupCon", "SupCon+ITM", "ITM", "NTXent", "CE+NTXent", "CE+NTXent+ITM"
+- `nb_negatives`: Number of hard negatives taken from regions outside the training sample
+- `save_dir`: Directory for models to be saved
+- `nb_epochs`: The number of epochs for training
+- `pairing_mode`: assoicated-The negatives are text-image pairs associated but come from a different region. Or non-associated-The negatives are text-image pairs that are not associated with each other, and they also come from a different region
+- `image_dir`: Directory of the image dataset
+- `data_dir`: Directory of the text dataset
+- `model_type`: Type of pre-training strategy to be carried, can be between CLIP, CLIPITM, and BLIP2
+- `finetune_mode`: Currently, the script only accepts the parameter value as "all," indicating all model layers will be fine-tuned. We plan to extend this script to adapt the selective fine-tuning of layers.
+- `pretrained_model_dir`: Directory of pre-trained text-alignment model
+- `extract_representation_from`: Token to extract representations from: "CLS" or "EOS" for the ITC loss
+- `augment_data`: Perform augmentations, including HorizontalFlip, VerticalFlip, RandomResizedCrop, Rotate, ShiftScaleRotate, and GaussNoise the image data.
+- `nb_augmented_samples`: if augment_data=True; Number of augmented samples, if set to 1–all the above operations will be applied once
+- `fusion_technique`: Fusion technique for merging the representations from DeCLUTR and ViT backbones. Can be amongst mean, concat, add, multiply, attention, qformer, or learned_fusion
+
+To perform pre-training on the text-image alignment task using the DeCLUTR-ViT backbone, run:
+
+```python
+CUDA_VISIBLE_DEVICES=0 python train/multimodal/CLIPStyleModels.py \
+    --nb_epochs 40 \
+    --nb_negatives 5 \
+    --temp 0.1 \
+    --batch_size 32 \
+    --learning_rate 0.0001 \
+    --logged_entry_name blip2_pretraining:non_associated:5-seed:1111-temp:0.1 \
+    --pairing_mode non-associated \
+    --model_type BLIP2 \
+    --save_dir models/multimodal-baseline/pre-trained/  \
+    --image_dir /data/IMAGES/ \
+    --data_dir /data/processed/
+ ```
+
+To fine-tune the pre-trained text-alignment model with a joint loss (by default the model uses mean pooling as the fusion technique, any other fusion technique is not yet implemented), run:
+
+```python
+CUDA_VISIBLE_DEVICES=0 python train/multimodal/finetuneCLIPStyleModels.py \
+    --nb_epochs 40 \
+    --temp 0.1 \
+    --batch_size 32 \
+    --learning_rate 0.0001 \
+    --model_type BLIP2 \
+    --loss CE+SupCon \
+    --finetune_mode all \
+    --logged_entry_name finetunedBLIP2-temp:0.1-loss:CE+SupCon-layers:all-neg:5 \
+    --save_dir models/multimodal-baseline/fine-tuned/  \
+    --image_dir /data/IMAGES/ \
+    --data_dir /data/processed/ \
+    --extract_representation_from EOS \
+    --pretrained_model_dir models/multimodal-baseline/pre-trained/
+ ```
+
+To train the end-to-end DeCLUTR-ViT backbone with mean pooling-based fusion and joint loss, run:
+
+```python
+CUDA_VISIBLE_DEVICES=0 python e2e_fusion.py \
+    --batch_size 32 \
+    --augment_data False \
+    --city south \
+    --seed 100 \
+    --logged_entry_name DeCLUTR-ViT:CE+SupCon_fusion:mean_city:south_seed:100_temp:0.1 \
+    --learning_rate 0.0001 \
+    --nb_epochs 40 \
+    --fusion_technique mean \
+    --loss CE+SupCon \
+    --temp 0.1 \
+    --save_dir models/multimodal-baseline/e2e/  \
+    --image_dir /data/IMAGES/ \
+    --data_dir /data/processed/
+```
+
+### Metric-learning Task
+Our research also explores a range of metric-learning baselines to establish text-only and vision-only benchmarks for authorship verification tasks. These baselines are trained using Triplet or SupCon losses. 
+
+#### Text Baselines
+For the DeCLUTR-small backbone to be trained on the metric-learning task, please run the textContraLearn.py script above with the following changes:
