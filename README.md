@@ -39,15 +39,15 @@ Our research explores a range of baselines to establish benchmarks for text-only
 
 To train the text-only benchmark with DeCLUTR-small backbone, run:
 
-- Specify the GPU to use. CUDA_VISIBLE_DEVICES=0 means only GPU 0 will be used.
-- Set the batch size for training. Larger values use more memory but may speed up training.
-- Specify the demographic subset of the dataset to train on. This could be "south", "midwest", "west", or "northeast". Here, "south" is the selected group.
-- Define the pretrained model for classification. The implementation is tested for "johngiorgi/declutr-small" and "AnnaWegmann/Style-Embedding" models.
-- Specify the tokenizer to use. It should match the model to ensure compatibility.
-- Set the random seed for the reproducibility of the results.
-- Provide a log entry name, helping identify the experiment configuration.
-- Specify the learning rate for the optimizer. Lower values may ensure more stable training.
-- Directory for models to be saved.
+- Specify the GPU to use. `CUDA_VISIBLE_DEVICES=0`¸ means only GPU 0 will be used.
+- `batch_size`: Set the batch size for training. Larger values use more memory but may speed up training.
+- `geography`: Specify the geographical subset of the dataset to train on. This could be "south", "midwest", "west", or "northeast". 
+- `model_name_or_path`: Define the pretrained model for classification. The implementation is tested for "johngiorgi/declutr-small" and "AnnaWegmann/Style-Embedding" models.
+- `tokenizer_name_or_path`: Specify the tokenizer to use. It should match the model to ensure compatibility.
+- `seed`: Set the random seed for the reproducibility of the results.
+- `logged_entry_name`: Provide a log entry name, helping identify the experiment configuration. Please set up a [weights and biases](https://wandb.ai/site/) account first. 
+- `learning_rate`: Specify the learning rate for the optimizer. 
+- `save_dir`: Directory for models to be saved.
 
 ```python
 CUDA_VISIBLE_DEVICES=0 python textClassifier.py \
