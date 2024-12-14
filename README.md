@@ -38,24 +38,25 @@ Our research explores a range of baselines to establish benchmarks for text-only
 </p>
 
 To train the text-only benchmark with DeCLUTR-small backbone, run:
-```python
-# Specify the GPU to use. CUDA_VISIBLE_DEVICES=0 means only GPU 0 will be used.
-CUDA_VISIBLE_DEVICES=0 python textClassifier.py \
-    # Set the batch size for training. Larger values use more memory but may speed up training.
-    --batch_size 32 \
-    # Specify the demographic subset of the dataset to train on. This could be "south", "midwest", "west", or "northeast". Here, "south" is the selected group.
-    --geography south \
-    # Define the pretrained model for classification. The implementation is tested for "johngiorgi/declutr-small" and "AnnaWegmann/Style-Embedding" models.
-    --model_name_or_path johngiorgi/declutr-small \
-    # Specify the tokenizer to use. It should match the model to ensure compatibility.
-    --tokenizer_name_or_path johngiorgi/declutr-small \
-    # Set the random seed for the reproducibility of the results.
-    --seed 1111 \
-    # Provide a log entry name, helping identify the experiment configuration.
-    --logged_entry_name declutr-text-only-seed:1111-bs:32-loss:CE-south \
-    # Specify the learning rate for the optimizer. Lower values may ensure more stable training.
-    --learning_rate 0.0001 \
-    # Directory for models to be saved.
-    --save_dir models/text-baseline/
 
+- Specify the GPU to use. CUDA_VISIBLE_DEVICES=0 means only GPU 0 will be used.
+- Set the batch size for training. Larger values use more memory but may speed up training.
+- Specify the demographic subset of the dataset to train on. This could be "south", "midwest", "west", or "northeast". Here, "south" is the selected group.
+- Define the pretrained model for classification. The implementation is tested for "johngiorgi/declutr-small" and "AnnaWegmann/Style-Embedding" models.
+- Specify the tokenizer to use. It should match the model to ensure compatibility.
+- Set the random seed for the reproducibility of the results.
+- Provide a log entry name, helping identify the experiment configuration.
+- Specify the learning rate for the optimizer. Lower values may ensure more stable training.
+- Directory for models to be saved.
+
+```python
+CUDA_VISIBLE_DEVICES=0 python textClassifier.py \
+    --batch_size 32 \
+    --geography south \
+    --model_name_or_path johngiorgi/declutr-small \
+    --tokenizer_name_or_path johngiorgi/declutr-small \
+    --seed 1111 \
+    --logged_entry_name declutr-text-only-seed:1111-bs:32-loss:CE-south \
+    --learning_rate 0.0001 \
+    --save_dir models/text-baseline/
 ```
