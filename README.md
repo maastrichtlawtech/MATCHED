@@ -8,3 +8,23 @@ The MATCHED dataset is a novel, multimodal collection of escort advertisements d
 <p align="center">
   <img src="/Images/Dataset.png">
 </p>
+
+# Setup
+This repository is tested on Python 3.10 and [conda](https://docs.conda.io/projects/miniconda/en/latest/). First, you should install a virtual environment:
+```
+conda create -n MATCHED python=3.10
+```
+
+To activate the conda environment, run:
+```
+conda activate MATCHED
+```
+
+Then, you can install all dependencies:
+```
+pip install -r requirements.txt
+```
+
+Additionally, to perform the authorship verification task, please install the FAISS package as suggested [here](https://github.com/facebookresearch/faiss/blob/main/INSTALL.md)
+
+# Experiments
