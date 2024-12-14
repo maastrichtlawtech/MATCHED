@@ -31,26 +31,28 @@ Additionally, to perform the authorship verification task, please install the FA
 
 # Experiments
 
+### Authorship Identification: A classification task
+
 Our research explores a range of baselines to establish benchmarks for text-only, vision-only, and multimodal approaches in authorship identification. Among these, we identify the DeCLUTR-small backbone as the most effective for text-only tasks, the ViT-base-patch16-244 backbone as the best-performing vision-only model, and their combination with mean pooling as the optimal multimodal backbone. The comprehensive results for all our authorship identification baselines are presented below:
 
 <p align="center">
   <img src="/Images/identification.png" alt="Classification" style="width:65%; max-width:700px;">
 </p>
 
-To train the text-only benchmark with DeCLUTR-small backbone, run:
+To train the text-only benchmark with DeCLUTR-small backbone and CE loss, run:
 
 - Specify the GPU to use. `CUDA_VISIBLE_DEVICES=0`¸ means only GPU 0 will be used.
 - `batch_size`: Set the batch size for training. Larger values use more memory but may speed up training.
-- `geography`: Specify the geographical subset of the dataset to train on. This could be "south", "midwest", "west", or "northeast". 
+- `geography`: Specify the geographical subset of the dataset on which to train. This could be "south," "midwest," "west," or "northeast." 
 - `model_name_or_path`: Define the pretrained model for classification. The implementation is tested for "johngiorgi/declutr-small" and "AnnaWegmann/Style-Embedding" models.
 - `tokenizer_name_or_path`: Specify the tokenizer to use. It should match the model to ensure compatibility.
 - `seed`: Set the random seed for the reproducibility of the results.
-- `logged_entry_name`: Provide a log entry name, helping identify the experiment configuration. Please set up a [weights and biases](https://wandb.ai/site/) account first. 
+- `logged_entry_name`: Provide a log entry name to help identify the experiment configuration. Please set up a [weights and biases](https://wandb.ai/site/) account first. 
 - `learning_rate`: Specify the learning rate for the optimizer. 
 - `save_dir`: Directory for models to be saved.
 
 ```python
-CUDA_VISIBLE_DEVICES=0 python textClassifier.py \
+CUDA_VISIBLE_DEVICES=0 python train/text/textClassifier.py \
     --batch_size 32 \
     --geography south \
     --model_name_or_path johngiorgi/declutr-small \
@@ -59,4 +61,38 @@ CUDA_VISIBLE_DEVICES=0 python textClassifier.py \
     --logged_entry_name declutr-text-only-seed:1111-bs:32-loss:CE-south \
     --learning_rate 0.0001 \
     --save_dir models/text-baseline/
+```
+
+To train the text-only benchmark with DeCLUTR-small backbone and joint loss, run:
+
+- Specify the GPU to use. CUDA_VISIBLE_DEVICES=0 means only GPU 0 will be used.
+- `batch_size`: Set the batch size for training. Larger values use more memory but may speed up training.
+- `geography`: Specify the geographical subset of the dataset on which to train. This could be "south," "midwest," "west," or "northeast." 
+- `model_name_or_path`: Define the pretrained model for classification. The implementation is tested for "johngiorgi/declutr-small" and "AnnaWegmann/Style-Embedding" models.
+- `tokenizer_name_or_path`: Specify the tokenizer to use. It should match the model to ensure compatibility.
+- `seed`: Set the random seed for the reproducibility of the results.
+- `logged_entry_name`: Provide a log entry name to help identify the experiment configuration. Please set up a [weights and biases](https://wandb.ai/site/) account first. 
+- `learning_rate`: Specify the learning rate for the optimizer. 
+- `save_dir`: Directory for models to be saved.
+- `temp`: Set the temperature value for contrastive loss computation.
+- `loss1_type`: Define the type of the first loss function. This could be CE or None for metric learning tasks. Here, "CE" stands for Cross-Entropy loss.
+- `loss2_type`: Define the type of the second loss function. This could be SupCon, Triplet, infoNCE, SupCon-negatives or infoNCE-negatives.  "SupCon-negatives" refers to Supervised Contrastive loss with in-batch negative examples.
+- `num_hard_negatives`: Number of in-batch hard negatives taken from other classes in the batch
+- `task`: can be classification or metric-learning
+
+```python
+CUDA_VISIBLE_DEVICES=0 python train/text/textContraLearn.py \
+    --batch_size 32 \
+    --geography south \
+    --loss1_type CE \
+    --loss2_type SupCon-negatives \
+    --model_name_or_path johngiorgi/declutr-small \
+    --tokenizer_name_or_path johngiorgi/declutr-small \
+    --seed 1111 \
+    --logged_entry_name contra-chicago-CE_SupConloss-lr:0.0001-temp:0.1 \
+    --learning_rate 0.0001 \
+    --temp 0.1 \
+    --num_hard_negatives 5 \
+    --task classification
+    --nb_triplets 5
 ```
