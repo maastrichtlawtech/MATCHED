@@ -29,8 +29,27 @@ Additionally, to perform the authorship verification task, please install the FA
 
 # Experiments
 
-Our research establishes benchmarks for authorship identification by experimenting with various baselines across text-only, vision-only, and multimodal settings. Specifically, we utilize the DeCLUTR-small model as the backbone for text-only experiments and the ViT-base-patch16-224 model for vision-only experiments. We combine the DeCLUTR-small and ViT-base-patch16-224 models for our multimodal backbone through mean pooling to effectively capture textual and visual features. The performance results of all our authorship identification baselines are presented below.
+Our research explores a range of baselines to establish benchmarks for text-only, vision-only, and multimodal approaches in authorship identification. Among these, we identify the DeCLUTR-small backbone as the most effective for text-only tasks, the ViT-base-patch16-244 backbone as the best-performing vision-only model, and their combination with mean pooling as the optimal multimodal backbone. The comprehensive results for all our authorship identification baselines are presented below:
 
 <p align="center">
   <img src="/Images/identification.png" alt="Classification" style="width:65%; max-width:700px;">
 </p>
+
+To train the text-only benchmark with DeCLUTR-small backbone, run:
+```
+CUDA_VISIBLE_DEVICES=0 python textClassifier.py \
+    # Set the batch size for training. Larger values use more memory but may speed up training.
+    --batch_size 32 \
+    # Specify the demographic subset of the dataset to train on. Here, "south" is the selected group.
+    --demography south \
+    # Define the pretrained model to be used for classification. 
+    --model_name_or_path johngiorgi/declutr-small \
+    # Specify the tokenizer to use. It should match the model to ensure compatibility.
+    --tokenizer_name_or_path johngiorgi/declutr-small \
+    # Set the random seed for the reproducibility of the results.
+    --seed 1111 \
+    # Provide a log entry name, helping identify the experiment configuration.
+    --logged_entry_name declutr-text-only-seed:1111-bs:32-loss:CE-south \
+    # Specify the learning rate for the optimizer. Lower values may ensure more stable training.
+    --learning_rate 0.0001 \
+```
