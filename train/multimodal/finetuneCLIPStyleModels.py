@@ -53,6 +53,7 @@ parser.add_argument('--data_dir', type=str, default='/workspace/persistent/HTCli
 parser.add_argument('--image_dir', type=str, default="/workspace/persistent/HTClipper/data/IMAGES", help="Image directory")
 parser.add_argument('--save_dir', type=str, default="/workspace/persistent/HTClipper/models/grouped-and-masked/multimodal-baselines/classification/finetuned", help="Directory for models to be saved")
 parser.add_argument('--model_dir_name', type=str, default=None, help="Save the model with the folder name as mentioned.")
+parser.add_argument('--geography', type=str, default='chicago', help="""geography of data, can be only between chicago, atlanta, houston, dallas, detroit, ny, sf or all""")
 parser.add_argument('--model_type', type=str, default="CLIP", help="Can be between CLIP, BLIP2, and CLIPITM")
 parser.add_argument('--batch_size', type=int, default=32, help="Batch Size")
 parser.add_argument('--nb_epochs', type=int, default=20, help="Number of Epochs")
@@ -94,6 +95,7 @@ assert args.loss in ["CE", "CE+SupCon"]
 assert args.extract_representation_from in ["CLS", "EOS"]
 assert args.model_type in ["CLIP", "CLIPITM", "BLIP2"]
 assert args.finetune_mode in ["all", "finetune_layers"]
+assert args.geography in ["chicago", "atlanta", "dallas", "detroit", "houston", "sf", "ny", "all", "midwest", "northeast", "south", "west"]
 
 # Creating directories
 if args.model_dir_name is None:
@@ -105,7 +107,7 @@ Path(directory).mkdir(parents=True, exist_ok=True)
 Path(args.save_dir).mkdir(parents=True, exist_ok=True)
 
 # %% Load your DataFrame
-df = pd.read_csv(os.path.join(args.data_dir, "south.csv"))
+df = pd.read_csv(os.path.join(args.data_dir, f"{args.geography}.csv"))
 df['region'] = 'south'
 
 # mapping every image to it's corresponding text

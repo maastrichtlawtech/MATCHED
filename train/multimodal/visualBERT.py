@@ -54,7 +54,7 @@ torch._dynamo.config.suppress_errors = True
 parser = argparse.ArgumentParser(description="Trains a VisualBERT based classifier to establish baselines for Multimodal Authorship tasks on Backpage advertisements.")
 parser.add_argument('--logged_entry_name', type=str, default="multimodal-latent-fusion-seed:1111", help="Logged entry name visible on weights and biases")
 parser.add_argument('--data_dir', type=str, default='/workspace/persistent/HTClipper/data/processed', help="""Data directory""")
-parser.add_argument('--city', type=str, default='chicago', help="""Demography of data, can be only between chicago, atlanta, houston, dallas, detroit, ny, sf or all""")
+parser.add_argument('--geography', type=str, default='chicago', help="""geography of data, can be only between chicago, atlanta, houston, dallas, detroit, ny, sf or all""")
 parser.add_argument('--save_dir', type=str, default=os.path.join(os.getcwd(), "/workspace/persistent/HTClipper/models/grouped-and-masked/multimodal-baselines/classification/visualBERT/"), help="""Directory for models to be saved""")
 parser.add_argument('--model_dir_name', type=str, default=None, help="Save the model with the folder name as mentioned.")
 parser.add_argument('--batch_size', type=int, default=32, help="Batch Size")
@@ -92,24 +92,24 @@ torch.set_float32_matmul_precision("high")
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-assert args.city in ["chicago", "atlanta", "dallas", "detroit", "houston", "sf", "ny", "all", "midwest", "northeast", "south", "west"]
+assert args.geography in ["chicago", "atlanta", "dallas", "detroit", "houston", "sf", "ny", "all", "midwest", "northeast", "south", "west"]
 
 # Creating directories
 if args.model_dir_name == None:
-    directory = os.path.join(args.save_dir, args.city, "seed:" + str(args.seed), "lr-" + str(args.learning_rate))
+    directory = os.path.join(args.save_dir, args.geography, "seed:" + str(args.seed), "lr-" + str(args.learning_rate))
 else:
-    directory = os.path.join(args.save_dir, args.city, "seed:" + str(args.seed), "lr-" + str(args.learning_rate), args.model_dir_name)
+    directory = os.path.join(args.save_dir, args.geography, "seed:" + str(args.seed), "lr-" + str(args.learning_rate), args.model_dir_name)
 Path(directory).mkdir(parents=True, exist_ok=True)
 Path(args.save_dir).mkdir(parents=True, exist_ok=True)
 
 # %% Load your DataFrame
-data_dir = os.path.join(args.data_dir, args.city + ".csv")
-args.image_dir = os.path.join("/workspace/persistent/HTClipper/data/IMAGES", args.city, "image", "image")
+data_dir = os.path.join(args.data_dir, args.geography + ".csv")
+args.image_dir = os.path.join("/workspace/persistent/HTClipper/data/IMAGES", args.geography, "image", "image")
 df = pd.read_csv(data_dir)
 
 # %% Load your DataFrame
-data_dir = os.path.join(args.data_dir, args.city + ".csv")
-args.image_dir = os.path.join("/workspace/persistent/HTClipper/data/IMAGES", args.city, "image", "image")
+data_dir = os.path.join(args.data_dir, args.geography + ".csv")
+args.image_dir = os.path.join("/workspace/persistent/HTClipper/data/IMAGES", args.geography, "image", "image")
 df = pd.read_csv(data_dir)
 
 # Apply map_images_with_text

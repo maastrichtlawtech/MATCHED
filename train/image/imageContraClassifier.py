@@ -44,7 +44,7 @@ parser.add_argument('--model_name_or_path', type=str, default="vgg16", help="Nam
 parser.add_argument('--logged_entry_name', type=str, default="vgg16-seed:1111", help="Logged entry name visible on weights and biases")
 parser.add_argument('--data_dir', type=str, default='/workspace/persistent/HTClipper/data/processed', help="""Data directory""")
 parser.add_argument('--data_type', type=str, default="faces", help="can be faces for the dataset with human faces or nofaces for body parts dataset")
-parser.add_argument('--city', type=str, default='south', help="""Demography of data, can be only between midwest, northeast, south, west""")
+parser.add_argument('--geography', type=str, default='south', help="""geography of data, can be only between midwest, northeast, south, west""")
 parser.add_argument('--save_dir', type=str, default="/workspace/persistent/HTClipper/models/grouped-and-masked/image-baselines/contra-learn/semi-supervised", help="""Directory for models to be saved""")
 parser.add_argument('--model_dir_name', type=str, default=None, help="Save the model with the folder name as mentioned.")
 parser.add_argument('--loss2_type', type=str, default="SupCon", help="Can be SupCon or triplet, the first loss is set to CE. This is activated only during the classification task")
@@ -83,7 +83,7 @@ seed_everything(args.seed)
 # Making sure that the input variables are right
 assert args.data_type in ["all"]
 assert args.task in ["classification", "semi-supervised"]
-assert args.city in ["midwest", "northeast", "south", "west"]
+assert args.geography in ["midwest", "northeast", "south", "west"]
 assert args.loss2_type in ["SupCon", "triplet"]
 assert args.semi_sup_loss in ["SupCon", "triplet"]
 assert args.model_name_or_path in ['vgg16', 'vgg19', "resnet50", "resnet101", "resnet152", "mobilenet", "mobilenetv2", "densenet121", "densenet169", 
@@ -95,18 +95,17 @@ assert args.model_name_or_path in ['vgg16', 'vgg19', "resnet50", "resnet101", "r
 
 # Creating directories
 if args.model_dir_name == None:
-    directory = os.path.join(args.save_dir, args.model_name_or_path.split("/")[-1], args.city, args.data_type, 
+    directory = os.path.join(args.save_dir, args.model_name_or_path.split("/")[-1], args.geography, args.data_type, 
                             "seed:" + str(args.seed), "lr-" + str(args.learning_rate))
 else:
-    directory = os.path.join(args.save_dir, args.model_name_or_path.split("/")[-1], args.city, args.data_type, 
+    directory = os.path.join(args.save_dir, args.model_name_or_path.split("/")[-1], args.geography, args.data_type, 
                             "seed:" + str(args.seed), "lr-" + str(args.learning_rate) + "-" + args.model_dir_name)
 
 Path(args.save_dir).mkdir(parents=True, exist_ok=True)
 Path(directory).mkdir(parents=True, exist_ok=True)
 
 # %% Loading dataset
-# Map city and data_type combinations to file paths
-# Map city and data_type combinations to file paths
+# Map geography and data_type combinations to file paths
 file_paths = {
     "chicago": {
         "faces": "chicago_faces.csv",
@@ -124,7 +123,7 @@ file_paths = {
 }
 
 # Construct the file path and read the CSV file
-file_path = os.path.join(args.data_dir, file_paths[args.city][args.data_type])
+file_path = os.path.join(args.data_dir, file_paths[args.geography][args.data_type])
 df = pd.read_csv(file_path)
 
 # Removing vendors that have less than 2 ads

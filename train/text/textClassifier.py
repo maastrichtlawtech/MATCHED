@@ -45,7 +45,7 @@ parser.add_argument('--model_name_or_path', type=str, default="johngiorgi/declut
 parser.add_argument('--tokenizer_name_or_path', type=str, default="johngiorgi/declutr-small", help="Name of the tokenizer to be used (can only be between distilbert-base-cased)")
 parser.add_argument('--logged_entry_name', type=str, default="declutr-small-CE-seed:1111", help="Logged entry name visible on weights and biases")
 parser.add_argument('--data_dir', type=str, default='/workspace/persistent/HTClipper/data/processed/', help="""Data directory""")
-parser.add_argument('--demography', type=str, default='south', help="""Demography of data, can be only between midwest, northeast, south, west""")
+parser.add_argument('--geography', type=str, default='south', help="""geography of data, can be only between midwest, northeast, south, west""")
 parser.add_argument('--save_dir', type=str, default="/workspace/persistent/HTClipper/models/grouped-and-masked/text-baselines/", help="""Directory for models to be saved""")
 parser.add_argument('--batch_size', type=int, default=64, help="Batch Size")
 parser.add_argument('--nb_epochs', type=int, default=40, help="Number of Epochs")
@@ -76,16 +76,16 @@ os.environ['CUDA_VISIBLE_DEVICES'] = "0"
 seed_everything(args.seed)
 
 # Creating directories
-directory = os.path.join(args.save_dir, args.model_name_or_path.split("/")[-1], args.demography, "seed:" + str(args.seed), "lr-" + str(args.learning_rate))
+directory = os.path.join(args.save_dir, args.model_name_or_path.split("/")[-1], args.geography, "seed:" + str(args.seed), "lr-" + str(args.learning_rate))
 Path(directory).mkdir(parents=True, exist_ok=True)
 
-assert args.demography in ["midwest", "northeast", "south", "west"]
+assert args.geography in ["midwest", "northeast", "south", "west"]
 
 # %% Loading the data
 dm = HTClassifierDataModule(args)
 dm.setup()
 
-df = pd.read_csv(os.path.join(args.data_dir, args.demography + '.csv'))
+df = pd.read_csv(os.path.join(args.data_dir, args.geography + '.csv'))
 class_counts = df['VENDOR'].value_counts()
 valid_classes = class_counts[class_counts >= 2].index
 df = df[df['VENDOR'].isin(valid_classes)][["TEXT", "VENDOR"]].drop_duplicates()

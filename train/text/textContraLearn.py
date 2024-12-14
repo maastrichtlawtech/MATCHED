@@ -41,7 +41,7 @@ parser.add_argument('--model_name_or_path', type=str, default="johngiorgi/declut
 parser.add_argument('--tokenizer_name_or_path', type=str, default="johngiorgi/declutr-small", help="Name of the tokenizer to be used (can only be between distilbert-base-cased)")
 parser.add_argument('--logged_entry_name', type=str, default="declutr-small-contra-loss:CE+SupCon-seed:1111", help="Logged entry name visible on weights and biases")
 parser.add_argument('--data_dir', type=str, default='/workspace/persistent/HTClipper/data/processed/', help="""Data directory""")
-parser.add_argument('--demography', type=str, default='south', help="""Demography of data, can be only between midwest, northeast, south, west""")
+parser.add_argument('--geography', type=str, default='south', help="""geography of data, can be only between midwest, northeast, south, west""")
 parser.add_argument('--save_dir', type=str, default="/workspace/persistent/HTClipper/models/grouped-and-masked/text-baselines/contra-learn/semi-supervised", help="""Directory for models to be saved""")
 parser.add_argument('--loss1_type', type=str, default="CE", help="Can be None or CE, only used for classification task")
 parser.add_argument('--loss2_type', type=str, default="SupCon-negatives", help="Can be KL, infoNCE, infoNCE-negatives, SupCon, triplet, or SupCon-negatives, only used for classification task")
@@ -82,7 +82,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 os.environ['CUDA_VISIBLE_DEVICES'] = "0"
 seed_everything(args.seed)
 
-assert args.demography in ["midwest", "northeast", "south", "west"]
+assert args.geography in ["midwest", "northeast", "south", "west"]
 assert args.loss_type in ["SupCon", "triplet"]
 assert args.task in ["classification", "semi-supervised"]
 assert args.loss1_type in ["None", "CE"]
@@ -91,15 +91,15 @@ assert args.loss2_type in ["KL", "infoNCE", "infoNCE-negatives", "SupCon", "SupC
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Creating directories
-directory = os.path.join(args.save_dir, args.model_name_or_path.split("/")[-1], args.demography, "pooled", "seed:" + str(args.seed), "lr-" + str(args.learning_rate), "coeff-" + str(args.coefficient), "temp:" + str(args.temp), args.loss_type)
+directory = os.path.join(args.save_dir, args.model_name_or_path.split("/")[-1], args.geography, "pooled", "seed:" + str(args.seed), "lr-" + str(args.learning_rate), "coeff-" + str(args.coefficient), "temp:" + str(args.temp), args.loss_type)
 Path(directory).mkdir(parents=True, exist_ok=True)
 
 # Loading data
-dm = HTContraDataModule(file_dir=os.path.join(args.data_dir, args.demography + '.csv'), tokenizer_name_or_path=args.tokenizer_name_or_path, seed=args.seed, train_batch_size=args.batch_size, 
+dm = HTContraDataModule(file_dir=os.path.join(args.data_dir, args.geography + '.csv'), tokenizer_name_or_path=args.tokenizer_name_or_path, seed=args.seed, train_batch_size=args.batch_size, 
                         eval_batch_size=args.batch_size)
 dm.setup(stage="fit")
 
-args.num_classes = pd.read_csv(os.path.join(args.data_dir, args.demography + '.csv')).VENDOR.nunique()
+args.num_classes = pd.read_csv(os.path.join(args.data_dir, args.geography + '.csv')).VENDOR.nunique()
 args.num_training_steps = len(dm.train_dataloader()) * args.nb_epochs
 # Setting the warmup steps to 1/10th the size of training data
 args.warmup_steps = int(len(dm.train_dataloader()) * 10/100)

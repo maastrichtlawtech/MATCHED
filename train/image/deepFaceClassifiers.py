@@ -45,7 +45,7 @@ parser.add_argument('--model_name_or_path', type=str, default="Facenet512", help
 parser.add_argument('--logged_entry_name', type=str, default="Facenet512-seed:1111", help="Logged entry name visible on weights and biases")
 parser.add_argument('--data_dir', type=str, default='/workspace/persistent/HTClipper/data/processed', help="""Data directory""")
 parser.add_argument('--data_type', type=str, default="faces", help="can be faces for the dataset with human faces or nofaces for body parts dataset")
-parser.add_argument('--city', type=str, default='chicago', help="""Demography of data, can be only between chicago, atlanta, houston, dallas, detroit, ny, or sf""")
+parser.add_argument('--geography', type=str, default='chicago', help="""geography of data, can be only between chicago, atlanta, houston, dallas, detroit, ny, or sf""")
 parser.add_argument('--save_dir', type=str, default="/workspace/persistent/HTClipper/models/image-baselines/end-to-end", help="""Directory for models to be saved""")
 parser.add_argument('--batch_size', type=int, default=32, help="Batch Size")
 parser.add_argument('--nb_epochs', type=int, default=40, help="Number of Epochs")
@@ -79,7 +79,7 @@ assert args.data_type in ["faces", "nofaces"]
 assert args.model_name_or_path in ["VGG-Face", "Facenet", "Facenet512", "OpenFace", "DeepFace", "DeepID", "ArcFace", "Dlib", "SFace", "GhostFaceNet"]
 
 # Creating directories
-directory = os.path.join(args.save_dir, args.model_name_or_path.split("/")[-1], args.city, args.data_type, "seed:" + str(args.seed), "lr-" + str(args.learning_rate))
+directory = os.path.join(args.save_dir, args.model_name_or_path.split("/")[-1], args.geography, args.data_type, "seed:" + str(args.seed), "lr-" + str(args.learning_rate))
 Path(directory).mkdir(parents=True, exist_ok=True)
 Path(args.save_dir).mkdir(parents=True, exist_ok=True)
 
