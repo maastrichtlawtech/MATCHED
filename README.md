@@ -283,3 +283,10 @@ CUDA_VISIBLE_DEVICES=0 python train/image/imageContraClassifier.py \
     --image_dir /data/IMAGES/ \
     --data_dir /data/processed/
 ```
+
+# Retrieval Results
+Our research emphasizes evaluating the classifier and metric-learning baselines through a retrieval task based on the similarity of MATCHED advertisements. The results are presented below:
+
+<p align="center">
+  <img src="/Images/retrieval.png" alt="metric-learning">
+</p>
