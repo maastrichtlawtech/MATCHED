@@ -265,7 +265,7 @@ def compute_triplet_loss(features, labels, triplet_loss_fn, num_negatives):
 
     return triplet_loss_fn(anchor, positive, negative)
 
-class SemiConstrativeVisionModel(pl.LightningModule):
+class SelfConstrativeVisionModel(pl.LightningModule):
     def __init__(self, model_name, num_training_steps, warmup_steps=0, weight_decay=0.01, learning_rate=1e-4, temp=0.07, loss_type="SupCon", nb_negatives=5, contrastive_weight=1, epsilon=1e-12):
         super().__init__()
         self.model = self.load_model(model_name)

@@ -67,8 +67,6 @@ parser.add_argument('--train_data_percentage', type=float, default=1.0, help="Pe
 parser.add_argument('--adam_epsilon', type=float, default=1e-6, help="Epsilon value for adam optimizer")
 parser.add_argument('--min_delta_change', type=float, default=0.01, help="Minimum change in delta in validation loss for Early Stopping")
 parser.add_argument('--weight_decay', type=float, default=0.01, help="Weight decay")
-parser.add_argument('--augment_data', type=bool, default=False, help='Enables data augmentation')
-parser.add_argument('--nb_augmented_samples', type=int, default=1, help='Number of augmented samples to be generated')
 parser.add_argument('--loss', type=str, default='NTXENT', help='Loss function to use. Can be NTXENT')
 parser.add_argument('--temp', type=float, default=0.5, help="Tempertaure variable for the Constrastive loss function")
 args = parser.parse_args()

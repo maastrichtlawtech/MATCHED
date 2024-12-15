@@ -255,7 +255,7 @@ class HTContraClassifierModel(pl.LightningModule):
             self.unfreeze() 
 
 
-class SemiConstrativeTextModel(pl.LightningModule):
+class SelfConstrativeTextModel(pl.LightningModule):
     def __init__(self, *args, **kwargs):
         super().__init__()
         

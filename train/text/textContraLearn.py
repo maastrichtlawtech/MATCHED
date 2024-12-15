@@ -36,18 +36,18 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # %% Setting up the Argparser
-parser = argparse.ArgumentParser(description="Trains a transformers based classifier or a Semi-Supervised model with Contrastive loss for text-based Authorship tasks on Backpage advertisements.")
+parser = argparse.ArgumentParser(description="Trains a transformers based classifier or a metric-learning model with Contrastive loss for text-based Authorship tasks on Backpage advertisements.")
 parser.add_argument('--model_name_or_path', type=str, default="johngiorgi/declutr-small", help="Name of the model to be trained (can only be between distilbert-base-cased)")
 parser.add_argument('--tokenizer_name_or_path', type=str, default="johngiorgi/declutr-small", help="Name of the tokenizer to be used (can only be between distilbert-base-cased)")
 parser.add_argument('--logged_entry_name', type=str, default="declutr-small-contra-loss:CE+SupCon-seed:1111", help="Logged entry name visible on weights and biases")
 parser.add_argument('--data_dir', type=str, default='/workspace/persistent/HTClipper/data/processed/', help="""Data directory""")
 parser.add_argument('--geography', type=str, default='south', help="""geography of data, can be only between midwest, northeast, south, west""")
-parser.add_argument('--save_dir', type=str, default="/workspace/persistent/HTClipper/models/grouped-and-masked/text-baselines/contra-learn/semi-supervised", help="""Directory for models to be saved""")
+parser.add_argument('--save_dir', type=str, default="/workspace/persistent/HTClipper/models/grouped-and-masked/text-baselines/contra-learn/metric-learning", help="""Directory for models to be saved""")
 parser.add_argument('--loss1_type', type=str, default="CE", help="Can be None or CE, only used for classification task")
 parser.add_argument('--loss2_type', type=str, default="SupCon-negatives", help="Can be KL, infoNCE, infoNCE-negatives, SupCon, triplet, or SupCon-negatives, only used for classification task")
-parser.add_argument('--loss_type', type=str, default="SupCon", help="Can be SupCon or triplet, only used for the semi-supervised task")
+parser.add_argument('--loss_type', type=str, default="SupCon", help="Can be SupCon or triplet, only used for the metric-learning task")
 parser.add_argument('--coefficient', type=float, default=1.0, help="Lambda coefficient to balance loss1 and loss2")
-parser.add_argument('--task', type=str, default="classification", help="can be classification of semi-supervised")
+parser.add_argument('--task', type=str, default="classification", help="can be classification or metric-learning")
 parser.add_argument('--batch_size', type=int, default=32, help="Batch Size")
 parser.add_argument('--nb_epochs', type=int, default=40, help="Number of Epochs")
 parser.add_argument('--max_seq_length', type=int, default=512, help="Maximum sequence length")
@@ -66,7 +66,6 @@ parser.add_argument('--adam_epsilon', type=float, default=1e-6, help="Epsilon va
 parser.add_argument('--min_delta_change', type=float, default=0.5, help="Minimum change in delta in validation loss for Early Stopping")
 parser.add_argument('--temp', type=float, default=0.1, help="Tempertaure variable for the loss function")
 parser.add_argument('--weight_decay', type=float, default=0.01, help="Weight decay")
-parser.add_argument('--nb_triplets', type=int, default=5, help="number of in-batch triplets")
 parser.add_argument('--pooling', type=bool, default=True, help="Performs mean pooling on the CLS token, if turned off, the representations in the last layer of the model will be flattened and used.")
 args = parser.parse_args()
 
@@ -84,7 +83,7 @@ seed_everything(args.seed)
 
 assert args.geography in ["midwest", "northeast", "south", "west"]
 assert args.loss_type in ["SupCon", "triplet"]
-assert args.task in ["classification", "semi-supervised"]
+assert args.task in ["classification", "metric-learning"]
 assert args.loss1_type in ["None", "CE"]
 assert args.loss2_type in ["KL", "infoNCE", "infoNCE-negatives", "SupCon", "SupCon-negatives", "triplet"]
 
@@ -111,8 +110,8 @@ if args.task == "classification":
     model = HTContraClassifierModel(args)
 else:
     sys.path.append('../../architectures/')
-    from ContraLayer import SemiConstrativeTextModel
-    model = SemiConstrativeTextModel(args)
+    from ContraLayer import SelfConstrativeTextModel
+    model = SelfConstrativeTextModel(args)
 model.to(device)
 
 early_stop_callback = EarlyStopping(monitor="val_loss", min_delta=args.min_delta_change, patience=args.patience, verbose=False, mode="min")

@@ -53,8 +53,9 @@ parser.add_argument('--data_dir', type=str, default='/workspace/persistent/HTCli
 parser.add_argument('--image_dir', type=str, default="/workspace/persistent/HTClipper/data/IMAGES", help="Image directory")
 parser.add_argument('--save_dir', type=str, default="/workspace/persistent/HTClipper/models/grouped-and-masked/multimodal-baselines/classification/finetuned", help="Directory for models to be saved")
 parser.add_argument('--model_dir_name', type=str, default=None, help="Save the model with the folder name as mentioned.")
-parser.add_argument('--geography', type=str, default='chicago', help="""geography of data, can be only between chicago, atlanta, houston, dallas, detroit, ny, sf or all""")
-parser.add_argument('--model_type', type=str, default="CLIP", help="Can be between CLIP, BLIP2, and CLIPITM")
+parser.add_argument('--pretrained_model_dir', type=str, default="/workspace/persistent/HTClipper/models/grouped-and-masked/multimodal-baselines/pre-training/BLIP2/non-associated/seed:1111/lr-0.0001/NTXENT/0.1/negatives-5", help="Directory of pre-trained text-image alignment model")
+parser.add_argument('--geography', type=str, default='south', help="""geography of data, can be only between chicago, atlanta, houston, dallas, detroit, ny, sf or all""")
+parser.add_argument('--model_type', type=str, default="BLIP2", help="Can be between CLIP, BLIP2, and CLIPITM")
 parser.add_argument('--batch_size', type=int, default=32, help="Batch Size")
 parser.add_argument('--nb_epochs', type=int, default=20, help="Number of Epochs")
 parser.add_argument('--patience', type=int, default=3, help="Patience for Early Stopping")
@@ -169,7 +170,7 @@ if args.model_type == "CLIP":
 
     # Initialize the pre-trained model
     model = CLIPModel(weight_decay=args.weight_decay, eps=args.adam_epsilon, warmup_steps=warmup_steps, num_training_steps=num_training_steps)
-    checkpoint = torch.load(os.path.join("/workspace/persistent/HTClipper/models/grouped-and-masked/multimodal-baselines/pre-training/CLIP/non-associated/seed:1111/lr-0.0001/NTXENT/0.1/negatives-5", "final_model.ckpt"), map_location=device)
+    checkpoint = torch.load(os.path.join(args.pretrained_model_dir, "final_model.ckpt"), map_location=device)
     # Load the state dictionary into the model
     model.load_state_dict(checkpoint['state_dict'])
 
@@ -183,7 +184,7 @@ elif args.model_type == "CLIPITM":
     from CLIPITMLayer import CLIPITMModel, FineTuneCLIPITMClassifier
     # Initialize the pre-trained model
     model = CLIPITMModel(weight_decay=args.weight_decay, eps=args.adam_epsilon, warmup_steps=warmup_steps, num_training_steps=num_training_steps)
-    checkpoint = torch.load(os.path.join("/workspace/persistent/HTClipper/models/grouped-and-masked/multimodal-baselines/pre-training/CLIPITM/non-associated/seed:1111/lr-0.0001/NTXENT/BERTqformer/0.1/negatives-5", "final_model.ckpt"), map_location=device)
+    checkpoint = torch.load(os.path.join(args.pretrained_model_dir, "final_model.ckpt"), map_location=device)
     # Load the state dictionary into the model
     model.load_state_dict(checkpoint['state_dict'])
 
@@ -197,7 +198,7 @@ else:
     from BLIP2Layer import BLIP2Model, FineTuneBLIP2Classifier
     # Initialize the pre-trained model
     model = BLIP2Model(weight_decay=args.weight_decay, eps=args.adam_epsilon, warmup_steps=warmup_steps, num_training_steps=num_training_steps)
-    checkpoint = torch.load(os.path.join("/workspace/persistent/HTClipper/models/grouped-and-masked/multimodal-baselines/pre-training/BLIP2/non-associated/seed:1111/lr-0.0001/NTXENT/0.1/negatives-5", "final_model.ckpt"), map_location=device)
+    checkpoint = torch.load(os.path.join(args.pretrained_model_dir, "final_model.ckpt"), map_location=device)
     # Load the state dictionary into the model
     model.load_state_dict(checkpoint['state_dict'])
 

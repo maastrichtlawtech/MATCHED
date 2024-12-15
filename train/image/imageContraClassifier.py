@@ -39,17 +39,17 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # %% Setting up the Argparser
-parser = argparse.ArgumentParser(description="Trains a classifier or a Semi-Supervised model with Contrastive loss for vision-based Authorship tasks on Backpage advertisements.")
+parser = argparse.ArgumentParser(description="Trains a classifier or a metric-learning model with Contrastive loss for vision-based Authorship tasks on Backpage advertisements.")
 parser.add_argument('--model_name_or_path', type=str, default="vgg16", help="Name of the model to be trained (can only be between distilbert-base-cased)")
 parser.add_argument('--logged_entry_name', type=str, default="vgg16-seed:1111", help="Logged entry name visible on weights and biases")
 parser.add_argument('--data_dir', type=str, default='/workspace/persistent/HTClipper/data/processed', help="""Data directory""")
 parser.add_argument('--data_type', type=str, default="faces", help="can be faces for the dataset with human faces or nofaces for body parts dataset")
 parser.add_argument('--geography', type=str, default='south', help="""geography of data, can be only between midwest, northeast, south, west""")
-parser.add_argument('--save_dir', type=str, default="/workspace/persistent/HTClipper/models/grouped-and-masked/image-baselines/contra-learn/semi-supervised", help="""Directory for models to be saved""")
+parser.add_argument('--save_dir', type=str, default="/workspace/persistent/HTClipper/models/grouped-and-masked/image-baselines/contra-learn/metric-learning", help="""Directory for models to be saved""")
 parser.add_argument('--model_dir_name', type=str, default=None, help="Save the model with the folder name as mentioned.")
 parser.add_argument('--loss2_type', type=str, default="SupCon", help="Can be SupCon or triplet, the first loss is set to CE. This is activated only during the classification task")
-parser.add_argument('--semi_sup_loss', type=str, default="SupCon", help="Can be SupCon or Triplet. Only activated during the semi-supervised task.")
-parser.add_argument('--task', type=str, default="classification", help="can be classification of semi-supervised")
+parser.add_argument('--self_sup_loss', type=str, default="SupCon", help="Can be SupCon or Triplet. Only activated during the metric-learning task.")
+parser.add_argument('--task', type=str, default="classification", help="can be classification or metric-learning")
 parser.add_argument('--batch_size', type=int, default=32, help="Batch Size")
 parser.add_argument('--nb_epochs', type=int, default=40, help="Number of Epochs")
 parser.add_argument('--patience', type=int, default=3, help="Patience for Early Stopping")
@@ -82,10 +82,10 @@ seed_everything(args.seed)
 
 # Making sure that the input variables are right
 assert args.data_type in ["all"]
-assert args.task in ["classification", "semi-supervised"]
+assert args.task in ["classification", "metric-learning"]
 assert args.geography in ["midwest", "northeast", "south", "west"]
 assert args.loss2_type in ["SupCon", "triplet"]
-assert args.semi_sup_loss in ["SupCon", "triplet"]
+assert args.self_sup_loss in ["SupCon", "triplet"]
 assert args.model_name_or_path in ['vgg16', 'vgg19', "resnet50", "resnet101", "resnet152", "mobilenet", "mobilenetv2", "densenet121", "densenet169", 
                                 "efficientnet-b0", "efficientnet-b1", "efficientnet-b2", "efficientnet-b3", "efficientnet-b4", "efficientnet-b5", "efficientnet-b6",
                                 "efficientnet-b7", "efficientnetv2_rw_m", "efficientnetv2_rw_s", "efficientnetv2_rw_t", "convnext_tiny", "convnext_small", 
@@ -172,9 +172,9 @@ if args.task == "classification":
                                     epsilon=args.adam_epsilon, warmup_steps=args.warmup_steps, num_training_steps=args.num_training_steps)
 else:
     sys.path.append('../../architectures/')
-    from visionContraLayer import SemiConstrativeVisionModel
-    model = SemiConstrativeVisionModel(model_name=args.model_name_or_path, learning_rate=args.learning_rate, temp=args.temp, 
-                                        loss_type=args.semi_sup_loss, nb_negatives=args.nb_negatives, contrastive_weight=args.contra_weight,
+    from visionContraLayer import SelfConstrativeVisionModel
+    model = SelfConstrativeVisionModel(model_name=args.model_name_or_path, learning_rate=args.learning_rate, temp=args.temp, 
+                                        loss_type=args.self_sup_loss, nb_negatives=args.nb_negatives, contrastive_weight=args.contra_weight,
                                         epsilon=args.adam_epsilon, warmup_steps=args.warmup_steps, num_training_steps=args.num_training_steps)
 
 # %%  Setting the trainer
