@@ -23,8 +23,10 @@ conda activate MATCHED
 ```
 
 Then, you can install all dependencies:
+Note: Some parts of the script uses t5-encoder module, which can't be directly installed through the pip package. So, we recommend executing the requirement.txt by bypassing the t5-encoder package and then installing it seperately.
 ```
-pip install -r requirements.txt
+grep -v "t5_encoder" requirements.txt | pip install -r /dev/stdin
+python -m pip install git+https://github.com/osainz59/t5-encoder   
 ```
 
 Additionally, to perform the authorship verification task, please install the FAISS package as suggested [here](https://github.com/facebookresearch/faiss/blob/main/INSTALL.md)
